@@ -1,0 +1,35 @@
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6Z72Y378E7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-6Z72Y378E7');
+    </script>
+
+    <title>Payment</title>
+</head>
+<body style="background-color: black;">
+    <div style="background-color: black;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="/simulador/" style="color: greenyellow; font-size: xx-large;" class="nav-link px-2 link-dark">Volver al Simulador</a></li>
+        </ul>
+    </div>
+    <div>
+        {% if reset %}
+        <p style="color: white;">Has reseteado la cuenta del simulador satisfactoriamente<p>
+        {% else %}
+            <p style="color: white;">Transacción realizada satisfactoriamente<p>
+            {% if sell %}
+                <p style="color: white;">Tipo: venta</p>
+            {% else %}
+                <p style="color: white;">Tipo: compra</p>
+            {% endif %}
+            <p style="color: white;">Moneda: {{transaction.crypto}}</p>
+            <p style="color: white;">Cantidad: {{transaction.cantidad}}</p>
+            <p style="color: white;">Precio: {{transaction.price}}</p>
+        {% endif %}
+    </div>
+</body>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6Z72Y378E7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-6Z72Y378E7');
+    </script>
+
+    {% load static %}
+    <link href="{% static 'bootstrap.min.css' %}" type="text/css" rel="stylesheet">
+    <title>Noticias</title>
+    <script>
+      function fillModal() {
+        document.getElementById("nombre").value = "{{client.username}}";
+        document.getElementById("cartera").value = "{{cartera.cartera}}" + "€";
+        document.getElementById("bitcoin").value = "{{cartera.bitcoin}}";
+        document.getElementById("binance").value = "{{cartera.binance}}";
+        document.getElementById("ethereum").value = "{{cartera.ethereum}}";
+        //document.getElementById("total").value = user.eur + user.binance * {{prices.binance}} + user.ethereum * {{prices.ethereum}} + user.bitcoin * {{prices.bitcoin}} + "€";
+      }
+    </script>
+</head>
+<body style="background-color: rgb(22, 22, 22);">
+  <div style="background-color: black;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="/" style="color: white; font-size: xx-large;" class="nav-link px-2 link-dark">Inicio</a></li>
+        <li><a href="#" style="color: green; font-size: xx-large;" class="nav-link px-2 link-dark">Noticias</a></li>
+        <li><a href="/simulador/" style="color: white; font-size: xx-large;" class="nav-link px-2 link-dark">Simulador</a></li>
+      </ul>
+
+      {% if not logged %}
+        <a href="/accounts/login/">
+          <button type="button" class="btn btn-outline-light me-2">Login</button>
+        </a>
+
+        <a href="/accounts/register/">
+          <button type="button" class="btn btn-warning" >Sign-up</button>
+        </a>
+      {% else %}
+        <button type="button" onclick="document.getElementById('modal').style.display='block'; fillModal()" class="btn">
+          <img style="background-color: white;" src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="mdo" width="50" height="50" class="rounded-circle">
+        </button>
+      {% endif %}
+  </div>
+
+  <div class="modal" id="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content" style="background-color: rgb(41, 37, 37); color: rgb(71, 255, 71);">
+        <div class="modal-header">
+          <h5 class="modal-title">Perfil</h5>
+          <button type="button" onclick="document.getElementById('modal').style.display='none'" class="btn close" style="color: red;" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <p>Nombre de usuario:</p>
+            <input type="text" id="nombre" style="border-color: white; background-color: rgb(41, 37, 37); color: white;" name="nombre"><br><br>
+            <p>Cartera:</p>
+            <input type="text" style="border-color: white; background-color: rgb(41, 37, 37); color: white;" class="col-md-4" id="cartera" name="cartera"><br><br>
+            <p>CriptoMonedas:</p>
+            <label for="fname">Bitcoin:</label>
+            <input type="text" id="bitcoin" name="bitcoin" style="border-color: white; background-color: rgb(41, 37, 37); color: white;"><br><br>
+            <label for="fname">Binance coin:</label>
+            <input type="text" id="binance" name="binance" style="border-color: white; background-color: rgb(41, 37, 37); color: white;"><br><br>
+            <label for="fname">Ethereum:</label>
+            <input type="text" id="ethereum" name="ethereum" style="border-color: white; background-color: rgb(41, 37, 37); color: white;"><br><br>
+            <!--<br><br>
+            <label for="fname">Balance total:</label>
+            <input type="text" id="total" style="border-color: white; background-color: rgb(41, 37, 37); color: white;">-->
+          </form>
+        </div>
+        <div class="modal-footer">
+          <a href="/accounts/logout/"><button class="btn btn-outline-light me-2" style="color: red; border-color: red;">Logout</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="background-color: black;">
+    {% for noticia in noticias %}
+      <div class="card" style="width: 45rem; background-color: black; color: blanchedalmond;">
+        <div class="card-body">
+          <h5 class="card-title">{{noticia.titular}}</h5>
+          <p class="card-text">{{noticia.cuerpo}}</p>
+          <a href="{{noticia.link}}" target="_blank" class="btn btn-primary">Ir a la noticia</a>
+      </div>
+    {% endfor %}
+  </div>
+
+</body>
+</html>

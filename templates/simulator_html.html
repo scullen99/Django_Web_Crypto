@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulator</title>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6Z72Y378E7"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-6Z72Y378E7');
+    </script>
+
+    {% load static %}
+    <link href="{% static 'bootstrap.min.css' %}" type="text/css" rel="stylesheet">
+
+    <script>
+      //Objeto que guarda la info del usuario
+      var user = {eur:0, bitcoin:0, binance:0, ethereum:0};
+
+      //Funcion para renderizar el grafico
+      function renderChart() {
+        'use strict'
+        feather.replace()
+        var ctx = document.getElementById('myChart')
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: {{week|safe}},
+            datasets: [{
+              data: {{values|safe}},
+              lineTension: 0,
+              backgroundColor: 'transparent',
+              borderColor: '#007bff',
+              borderWidth: 4,
+              pointBackgroundColor: '#007bff'
+            }]
+          },
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true
+                }
+              }]
+            },
+            legend: {
+              display: false
+            }
+          }
+        })
+      }
+
+      //Al cargar la pagina guardamos las variables del back end en el objeto user
+      window.onload = function() {
+        user.eur = {{client.cartera}};
+        user.bitcoin = {{client.bitcoin}};
+        user.binance = {{client.binance}};
+        user.ethereum = {{client.ethereum}};
+
+        renderChart();
+      };
+
+      //Funcion para llenar toda la informacion en el modal
+      function fillModal() {
+        document.getElementById("nombre").value = "{{client.user.username}}";
+        document.getElementById("cartera").value = user.eur + "€";
+        document.getElementById("bitcoin").value = user.bitcoin;
+        document.getElementById("binance").value = user.binance;
+        document.getElementById("ethereum").value = user.ethereum;
+        //document.getElementById("total").value = user.eur + user.binance * {{prices.binance}} + user.ethereum * {{prices.ethereum}} + user.bitcoin * {{prices.bitcoin}} + "€";
+      }
+
+      //En esta funcion llenamos los parametros de la transaccion en el form
+      function addTransaction(price, n_coin, coin, type){
+        document.getElementById("crypto_form").value = coin;
+        document.getElementById("cantidad_form").value = n_coin;
+        document.getElementById("price_form").value = price;
+        document.getElementById("trans_type_form").value = type;
+      }
+
+      //Funcion que llamamos al vender
+      function sell(){
+        var coins = document.getElementById("sell_in").value;
+        var eur = document.getElementById("sell_out").value;
+        var coin_type = document.getElementById("coin_select_sell").value;
+
+        if (eur !== null){
+          if (user[coin_type] >= parseFloat(coins)){
+            user.eur += parseFloat(eur);
+            user[coin_type] -= parseFloat(coins);
+            addTransaction(eur, coins, coin_type, "venta");
+            save(false);
+          } else {
+            alert("No dispones de las crypto suficiente en la cartera");
+          }
+        }
+      }
+
+      //Funcion que llamamos al comprar
+      function buy(){
+        var coins = document.getElementById("buy_in").value;
+        var eur = document.getElementById("buy_out").value;
+        var coin_type = document.getElementById("coin_select_buy").value;
+
+        if (eur !== null){
+          if (user.eur >= parseFloat(eur)){
+            user.eur -= parseFloat(eur);
+            user[coin_type] += parseFloat(coins);
+            addTransaction(eur, coins, coin_type, "compra");
+            save(false);
+          } else {
+            alert("No dispones del dinero suficiente en la cartera");
+          }
+        }
+      }
+
+      //Esta funcion se usa para que cuando llenamos la informacion en los inputs de compra/venta nos actualice el otro valor
+      function change(id1, id2, sel, b){
+        var e1 = document.getElementById(id1);
+        var e2 = document.getElementById(id2);
+        var s = document.getElementById(sel).value;
+        if (!isNaN(parseFloat(e1.value))) {
+          if (b){
+            var v = parseFloat(e1.value) * getCoinPrice(s);
+          } else {
+            var v = parseFloat(e1.value) / getCoinPrice(s);
+          }
+          e2.value = String(v);
+        } else {
+          e2.value = "";
+        }
+      }
+
+      //Funcion que devuelve el precio de la moneda que sea
+      function getCoinPrice(coin){
+        switch(coin) { //Price in eur/crypto
+          case 'bitcoin':
+            return {{prices.bitcoin}};
+          case 'binance':
+            return {{prices.binance}};
+          case 'ethereum':
+            return {{prices.ethereum}};
+        }
+      }
+
+      //Esta es la funcion que usamos para resetear el usuario
+      function resetUser(){
+        user.eur      = 1000000.0;
+        user.bitcoin  = 0.0;
+        user.binance  = 0.0;
+        user.ethereum = 0.0;
+        save(true);
+      }
+
+      //Funcion para realizar una operacion de compra/venta/reset
+      function save(del){
+        document.getElementById("cartera_form").value  = user.eur;
+        document.getElementById("bitcoin_form").value  = user.bitcoin;
+        document.getElementById("binance_form").value  = user.binance;
+        document.getElementById("ethereum_form").value = user.ethereum;
+        if (del === true){
+          document.getElementById("del_form").value = 1;
+        } else {
+          document.getElementById("del_form").value = 0;
+        }
+        document.getElementById("form_save").submit();
+      }
+
+    </script>
+  </head>
+  <body style="background-color: rgb(22, 22, 22);">
+    <!--Header-->
+    <div style="background-color: black;" class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="/" style="color: white; font-size: xx-large;" class="nav-link px-2 link-dark">Inicio</a></li>
+        <li><a href="/noticias/" style="color: white; font-size: xx-large;" class="nav-link px-2 link-dark">Noticias</a></li>
+        <li><a href="#" style="color: green; font-size: xx-large;" class="nav-link px-2 link-dark">Simulador</a></li>
+      </ul>
+
+      <button type="button" onclick="document.getElementById('modal').style.display='block'; fillModal()" class="btn">
+        <img style="background-color: white;" src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" alt="mdo" width="50" height="50" class="rounded-circle">
+      </button>
+    </div>
+
+    <!--Modal-->
+    <div class="modal" id="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: rgb(41, 37, 37); color: rgb(71, 255, 71);">
+          <div class="modal-header">
+            <h5 class="modal-title">Perfil</h5>
+            <button type="button" onclick="document.getElementById('modal').style.display='none'" class="btn close" style="color: red;" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <p>Nombre de usuario:</p>
+              <input type="text" id="nombre" style="border-color: white; background-color: rgb(41, 37, 37); color: white;" name="nombre"><br><br>
+              <p>Cartera:</p>
+              <input type="text" style="border-color: white; background-color: rgb(41, 37, 37); color: white;" class="col-md-4" id="cartera" name="cartera"><br><br>
+              <p>CriptoMonedas:</p>
+              <label for="fname">Bitcoin:</label>
+              <input type="text" id="bitcoin" name="bitcoin" style="border-color: white; background-color: rgb(41, 37, 37); color: white;"><br><br>
+              <label for="fname">Binance coin:</label>
+              <input type="text" id="binance" name="binance" style="border-color: white; background-color: rgb(41, 37, 37); color: white;"><br><br>
+              <label for="fname">Ethereum:</label>
+              <input type="text" id="ethereum" name="ethereum" style="border-color: white; background-color: rgb(41, 37, 37); color: white;"><br><br>
+              <!--<br><br>
+              <label for="fname">Balance total:</label>
+              <input type="text" id="total" style="border-color: white; background-color: rgb(41, 37, 37); color: white;">-->
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline-light me-2" style="color: red; border-color: red;" onclick="resetUser()">Reset</button>
+              <a href="/accounts/logout/"><button class="btn btn-outline-light me-2" style="color: red; border-color: red;">Logout</button></a>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Chart and transactions-->
+    <div class="row g-5">
+      <div class="col-md-7">
+        <div class="container-fluid">
+            <h3 style="color: rgb(71, 255, 71);">Cartera:</h3>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+              <canvas class="my-4 w-100" id="myChart" width="1000" height="400"></canvas>
+            </main>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
+      </div>
+
+      <div class="col-md-5">
+        <h3 style="color: rgb(71, 255, 71);">Transaciones:</h3>
+        <div class="bd-example">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col" style="color: white;">Criptomoneda</th>
+                <th scope="col" style="color: white;">Cantidad</th>
+                <th scope="col" style="color: white;">Precio</th>
+                <th scope="col" style="color: white;">Tipo</th>
+              </tr>
+            </thead>
+            <tbody id="transactions">
+              {% if transactions %}
+                {% for trans in transactions %}
+                  <tr>
+                    <th scope="row" style="color: grey;">{{trans.crypto}}</th>
+                    <th scope="row" style="color: grey;">{{trans.cantidad}}</th>
+                    <th scope="row" style="color: grey;">{{trans.price}}</th>
+                    <th scope="row" style="color: grey;">{{trans.trans_type}}</th>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!--Sell and buy-->
+    <div class="row g-4" style="margin: 100px;">
+      <div class="col-md-6">
+        <h2 style="color: white;">Comprar</h2>
+        <div class="row g-5">
+          <input class="col-md-5" style="background-color: black; color: white;" type="text" id="buy_in" oninput="change('buy_in', 'buy_out', 'coin_select_buy', true)" placeholder="Cantidad">
+          <select class="col-md-3" type="select" id="coin_select_buy" onchange="change('buy_in', 'buy_out', 'coin_select_buy', true)">
+            <option value="bitcoin">Bitcoin</option>
+            <option value="binance">Binance coin</option>
+            <option value="ethereum">Ethereum</option>
+          </select>
+        </div><br>
+
+        <div class="row g-5">
+          <input class="col-md-5" style="background-color: black; color: white;" type="text" id="buy_out" oninput="change('buy_out', 'buy_in', 'coin_select_buy', false)" placeholder="Precio">
+        </div><br><br>
+
+        <div class="row g-5">
+          <button class="col-md-5 btn" style="background-color: rgb(0, 204, 255); color: white;" id="buy" onclick="buy()">Comprar</button>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <h2 style="color: white;">Vender</h2>
+        <div class="row g-5">
+          <input class="col-md-5" style="background-color: black; color: white;" type="text" id="sell_in" oninput="change('sell_in', 'sell_out', 'coin_select_sell', true)" placeholder="Cantidad">
+          <select class="col-md-3" type="select" id="coin_select_sell" onchange="change('sell_in', 'sell_out', 'coin_select_sell', true)">
+            <option value="bitcoin">Bitcoin</option>
+            <option value="binance">Binance coin</option>
+            <option value="ethereum">Ethereum</option>
+          </select>
+        </div><br>
+
+        <div class="row g-5">
+          <input class="col-md-5" style="background-color: black; color: white;" type="text" id="sell_out" oninput="change('sell_out', 'sell_in', 'coin_select_sell', false)" placeholder="Precio">
+        </div><br><br>
+
+        <div class="row g-5">
+          <button class="col-md-5 btn" style="background-color: rgb(0, 204, 255); color: white;" id="sell" onclick="sell()">Vender</button>
+        </div>
+      </div>
+    </div>
+
+    <!--Pie de pagina de momento vacio-->
+    <footer class="bd-footer py-5 mt-5 bg-dark">
+      <div class="container py-5">
+        <div class="row">
+          <div class="col-6 col-lg-2 mb-3">
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!--Form oculto que usamos para enviar toda la informacion a la pagina de confirmacion-->
+    <form action="/confirmation/" method="post" id="form_save"  hidden> {% csrf_token %}
+      <input type="text" id="cartera_form" name="cartera_form">
+      <input type="text" id="bitcoin_form" name="bitcoin_form">
+      <input type="text" id="binance_form" name="binance_form">
+      <input type="text" id="ethereum_form" name="ethereum_form">
+      <input type="text" id="del_form" name="del_form">
+      <input type="text" id="crypto_form" name="crypto_form">
+      <input type="text" id="cantidad_form" name="cantidad_form">
+      <input type="text" id="price_form" name="price_form">
+      <input type="text" id="trans_type_form" name="trans_type_form">
+    </form>
+  </body>
+</html>

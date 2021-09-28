@@ -1,0 +1,33 @@
+"""web_crypto URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path
+
+from simulator.views import simulator_view
+from inicio.views import inicio_view, noticias_view
+from users.views import main, login_view, register_view, logout_view
+from payment.views import payment_view
+
+urlpatterns = [
+    path('', inicio_view),
+    path('simulador/', simulator_view),
+    path('confirmation/', payment_view),
+    path('noticias/', noticias_view),
+    path('accounts/register/', register_view),
+    path('accounts/login/', login_view),
+    path('accounts/logout/', logout_view),
+    path('admin/', admin.site.urls)
+]

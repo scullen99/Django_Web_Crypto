@@ -1,0 +1,84 @@
+.crypto-chart {
+    position: relative;
+    border-radius: 3px;
+    background: #131215;
+    color: white;
+}
+
+.crypto-chart,
+.crypto-chart * {
+    font-family: Graphik, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+.crypto-chart .price-container {
+    position: absolute;
+    top: 5px;
+    right: 9px;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.crypto-chart .cryptos-list {
+    padding: 1rem;
+}
+
+.crypto-chart .cryptos-list button.crypto-currency {
+    font-weight: 700;
+    border-radius: 4px;
+    margin-right: 10px;
+    cursor: pointer;
+    padding: 5px 16px;
+    font-size: 17px;
+    transition: all ease .2s;
+    border: 1px solid #ffffff;
+    background-color: transparent;
+    color: #ffffff;
+}
+
+.crypto-chart .cryptos-list button.crypto-currency:not(.selected):hover {
+    background: #ffffff1c;
+}
+
+.crypto-chart .cryptos-list button.crypto-currency.selected {
+    background: #02B988;
+    color: white;
+    border-color: #02B988;
+}
+
+.crypto-chart svg.crypto-chart-display {
+    width: 100%;
+    display: flex;
+    cursor: crosshair;
+    user-select: none;
+}
+
+.crypto-chart svg.crypto-chart-display g path {
+    stroke-width: 1.7;
+    fill: transparent;
+    pointer-events: none;
+    stroke: rgb(22, 82, 240);
+}
+
+.crypto-chart svg.crypto-chart-display g text {
+    font-size: 13px;
+    color: #c1c1c1;
+    text-anchor: start;
+}
+
+.crypto-chart svg.crypto-chart-display g line {
+    stroke: #383838;
+}
+
+.crypto-chart svg.crypto-chart-display > line {
+    stroke: #909090;
+}
+
+.crypto-chart svg.crypto-chart-display > text {
+    fill: #5f5f5f;
+    font-size: 12px;
+}
+
+.crypto-chart svg.crypto-chart-display > circle {
+    fill: #094dff;
+    stroke: white;
+}
