@@ -1,20 +1,24 @@
 # Django Web Crypto
 
-<img src="" height="200" width="250" text-align="center">
+<img src="https://github.com/scullen99/Django_Web_Crypto/blob/master/Django1.jpg" height="250" width="370" text-align="center">
 
-## <a href="https://flask.palletsprojects.com/en/2.0.x/"> Sitio Oficial Flask </a>
+## <a href="https://www.djangoproject.com/"> Sitio Oficial Django </a>
 
-Instalar Django:
+**Instalar Django:**
 ```
-pip install flask
+pip install Django==3.2.9
+```
+or
+```
+git clone https://github.com/django/django.git
 ```
 
-Comprobar versión:
+**Comprobar versión:**
 ```
-flask --version
+python -m django --version
 ```
 
-Lanzar servidor en local:
+**Lanzar servidor en local:**
 ```
-python3 flask_app_running.py
+python manage.py runserver
 ```
